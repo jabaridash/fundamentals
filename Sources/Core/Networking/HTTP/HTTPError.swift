@@ -11,17 +11,37 @@ import Foundation
 
 /// Types of failures that can occur when executing an `HTTPRequest`.
 public enum HTTPError: LocalizedError {
+    /// Encoding the HTTP request body failed.
     case encodingFailure(_ error: Error)
+    
+    /// Decoding the HTTP response body failed.
     case decodingFailure(_ error: Error)
+    
+    /// No data was returned in the `URLResponse`.
     case noDataReturned
-    case invalidImageData
+    
+    /// An error occured when executing the `URLSessionDataTask`.
     case urlSession(_ error: Error)
+    
+    /// No values were found for `Data`, `URLResponse`, or `Error`.
     case invalidResponse
+    
+    /// An invalid `URL` object was found when creating `URLComponents`.
     case invalidURLComponentsURL
+    
+    /// HTTP status code was 1XX.
     case informational(_ response: HTTPURLResponse, data: Data)
+    
+    /// HTTP status code was 3XX.
     case redirection(_ response: HTTPURLResponse, data: Data)
+    
+    /// HTTP status code was 4XX.
     case clientError(_ response: HTTPURLResponse, data: Data)
+    
+    /// HTTP status code was 5XX.
     case serverError(_ response: HTTPURLResponse, data: Data)
+    
+    /// HTTP status code was unrecognized.
     case unrecognizedStatusCode(_ response: HTTPURLResponse, data: Data)
     
     /// Describes the type of error that occured.
@@ -33,8 +53,6 @@ public enum HTTPError: LocalizedError {
             return "Decoding failure: \(error)"
         case .noDataReturned:
             return "No data was return in HTTP response body"
-        case .invalidImageData:
-            return "Invalid image data"
         case .urlSession(let error):
             return "URLSession Error: \(error)"
         case .invalidResponse:

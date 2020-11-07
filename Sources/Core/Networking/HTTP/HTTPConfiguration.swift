@@ -47,19 +47,3 @@ public extension HTTPConfiguration {
     var shouldHandleStatusCode: Bool { true }
     var timeoutInterval: TimeInterval? { nil }
 }
-
-// MARK: - DefaultHTTPConfiguration
-
-public struct DefaultHTTPConfiguration: HTTPConfiguration {}
-
-// MARK: - BasicHTTPConfiguration
-
-public struct BasicHTTPConfiguration: HTTPConfiguration {
-    public let cachePolicy: NSURLRequest.CachePolicy?
-    public let defaultHeaders: [String: String]
-    public let defaultParameters: [String: String]
-    public let jsonDecoder: JSONDecoder
-    public let jsonEncoder: JSONEncoder
-    public let shouldHandleStatusCode: Bool
-    public let timeoutInterval: TimeInterval?
-}

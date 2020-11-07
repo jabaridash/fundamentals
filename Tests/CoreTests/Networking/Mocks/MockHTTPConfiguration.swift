@@ -9,26 +9,27 @@ import Foundation
 
 @testable import Core
 
-public struct MockHTTPConfiguration: HTTPConfiguration {
-    public var cachePolicy: NSURLRequest.CachePolicy?
-    public var defaultHeaders: [String: String]
-    public var defaultParameters: [String: String]
-    public var jsonDecoder: JSONDecoder
-    public var jsonEncoder: JSONEncoder
-    public var shouldHandleStatusCode: Bool
-    public var timeoutInterval: TimeInterval?
+struct MockHTTPConfiguration: HTTPConfiguration {
+    var cachePolicy: NSURLRequest.CachePolicy?
+    var defaultHeaders: [String: String]
+    var defaultParameters: [String: String]
+    var jsonDecoder: JSONDecoder
+    var jsonEncoder: JSONEncoder
+    var shouldHandleStatusCode: Bool
+    var timeoutInterval: TimeInterval?
 }
 
-public extension HTTPConfiguration {
+extension HTTPConfiguration {
     static func mock(
         cachePolicy: NSURLRequest.CachePolicy? = .reloadIgnoringLocalAndRemoteCacheData,
         defaultHeaders: [String: String] = [:],
         defaultParameters: [String: String] = [:],
         jsonDecoder: JSONDecoder = JSONDecoder(),
         jsonEncoder: JSONEncoder = JSONEncoder(),
-        shouldHandleStatusCode: Bool = true,
+        shouldHandleStatusCode: Bool = false,
         timeoutInterval: TimeInterval? = nil
     ) -> MockHTTPConfiguration {
+        
         return MockHTTPConfiguration(
             cachePolicy: cachePolicy,
             defaultHeaders: defaultHeaders,

@@ -166,6 +166,33 @@ final class HTTPServiceSpec: QuickSpec {
                 }
             }
             
+            it("returns HTTPError.unrecognizedStatusCode when status code is less than 100") {
+                urlSession.response = HTTPURLResponse(statusCode: -1)
+                
+                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                
+                subject = HTTPService(
+                    session: urlSession,
+                    httpConfiguration: httpConfiguration
+                )
+                
+                waitUntil { done in
+                    subject.task(for: httpRequest).perform { result in
+                        guard
+                            case let .failure(error) = result,
+                            case let .unrecognizedStatusCode(response, data) = error
+                        else {
+                            fail("\(result)")
+                            return
+                        }
+                        
+                        expect(response) == urlSession.response
+                        expect(data) == urlSession.data
+                        done()
+                    }
+                }
+            }
+            
             it("returns HTTPError.clientError when status code is 5XX") {
                 urlSession.response = HTTPURLResponse(statusCode: 500)
                 
