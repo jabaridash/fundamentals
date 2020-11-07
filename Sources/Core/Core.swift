@@ -1,3 +1,5 @@
-struct Core {
+import RxSwift
+
+class Core {
     var text = "Hello, World!"
 }
