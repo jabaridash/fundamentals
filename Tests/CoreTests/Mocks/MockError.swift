@@ -6,5 +6,6 @@
 //
 
 enum MockError: Error, Equatable {
+    case basicError
     case httpRequestFailed
 }
