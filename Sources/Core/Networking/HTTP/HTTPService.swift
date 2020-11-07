@@ -127,19 +127,18 @@ extension HTTPService: HTTPServiceProtocol {
                     request: urlRequest,
                     response: response,
                     data: data,
-                    error: error,
-                    httpServiceConfiguration: self.httpConfiguration
+                    error: error
                 ) { result in
    
                     switch result {
                     case .success(let response):
                         do {
-                            let data = try self.httpConfiguration.jsonDecoder.decode(
+                            let body = try self.httpConfiguration.jsonDecoder.decode(
                                 R.ResponseBody.self,
                                 from: response.data
                             )
                             
-                            callback(.success(data))
+                            callback(.success(body))
                         } catch {
                             callback(.failure(.decodingFailure(error)))
                         }
@@ -163,14 +162,12 @@ private extension HTTPService {
     ///   - response: The response to the `URLRequest`.
     ///   - data: Optional data that may have been returned as a result of executing the request.
     ///   - error: An optional error that may have been returned due to a failed request.
-    ///   - httpServiceConfiguration: The configuration the details how to handle the response.
     ///   - completion: Completion handle that continues to handle the processed response.
     func handle(
         request: URLRequest,
         response: URLResponse?,
         data: Data?,
         error: Error?,
-        httpServiceConfiguration: HTTPConfiguration,
         completion: @escaping (Result<(response: HTTPURLResponse, data: Data), HTTPError>) -> Void
     ) {
         let result: Result<(response: HTTPURLResponse, data: Data), HTTPError>
@@ -179,7 +176,7 @@ private extension HTTPService {
             result = .failure(.urlSession(error))
         } else if let response = response as? HTTPURLResponse {
             if let data = data {
-                if httpServiceConfiguration.shouldHandleStatusCode {
+                if httpConfiguration.shouldHandleStatusCode {
                     switch response.statusCode {
                     case 100...199:
                         result = .failure(.informational(response, data: data))

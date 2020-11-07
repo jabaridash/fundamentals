@@ -9,25 +9,15 @@ import Foundation
 
 @testable import Core
 
-// MARK: - MockURLSessionDataTask
-
-final class MockURLSessionDataTask: URLSessionDataTask {
-    private let work: () -> Void
-        
-    override func resume() {
-        work()
-    }
-    
-    init(completion: @escaping () -> Void) {
-        self.work = completion
-    }
-}
-
 // MARK: - MockURLSession
 
 final class MockURLSession: URLSession {
-    var data: Data?
-    var response: URLResponse?
+    var dispatchQueue = DispatchQueue(label: "mock-url-queue")
+    
+    var data: Data? = try? JSONEncoder().encode([1, 2, 3])
+    
+    var response: HTTPURLResponse? = HTTPURLResponse()
+    
     var error: Error?
     
     var requests: [URLRequest] = []
@@ -38,14 +28,32 @@ final class MockURLSession: URLSession {
         requests.append(request)
         
         return MockURLSessionDataTask { [weak self] in
-            guard let self = self else { return }
-            completionHandler(self.data, self.response, self.error)
+            self?.dispatchQueue.async { [weak self] in
+                guard let self = self else { return }
+                
+                completionHandler(self.data, self.response, self.error)
+            }
         }
     }
 
-    private override init() {}
+    private override init() {
+        let key = DispatchSpecificKey<String>()
+        
+        dispatchQueue.setSpecific(key: key, value: "mock-url-queue-key")
+    }
     
     static func mock() -> MockURLSession {
         return .init()
+    }
+}
+
+extension HTTPURLResponse {
+    convenience init?(url: URL = URL(string: "https://ask.com")!, statusCode: Int = 200) {
+        self.init(
+            url: url,
+            statusCode: statusCode,
+            httpVersion: nil,
+            headerFields: nil
+        )
     }
 }

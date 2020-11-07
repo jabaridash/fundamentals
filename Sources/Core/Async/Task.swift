@@ -5,6 +5,8 @@
 //  Created by jabari on 11/3/20.
 //
 
+import Foundation
+
 // MARK: - TaskProtocol
 
 // TODO - Implement retry(), cancel(), recover(), zip() / merge(), timeout()
@@ -17,22 +19,17 @@ public protocol TaskProtocol {
     /// Type of error contained in the result's `.failure` case if the task fails.
     associatedtype E: Error
     
-    /// Executes the task.
-    ///
-    /// - Parameter completion Function that contains the work to be performed.
-    func perform(completion: @escaping (Result<T, E>) -> Void)
+    /// Executes the task on a specified `DispatchQueue`.
+    /// - Parameters:
+    ///   - dispatchQuque: Specified `DispatchQueue`.
+    ///   - completion: Function that contains the work to be performed.
+    func perform(on dispatchQuque: DispatchQueue, completion: @escaping (Result<T, E>) -> Void)
     
     /// Map the result of a Task into another type.
     ///
     /// - Parameter transform: Function that transforms the Tasks result type into a new type.
     /// - Returns: A Task with the result as the new type.
     func map<U>(transform: @escaping (T) throws -> U) -> Task<U, Error>
-    
-    /// Maps this `Task`'s success type into a Task of another type. Useful for chaining dependant Tasks.
-    ///
-    /// - Parameter transform: A function that transforms a Tasks result into a new Task
-    /// - Returns: A Task with the result as a new type.
-    func flatMap<U>(transform: @escaping (T) -> Task<U, E>) -> Task<U, E>
     
     /// Maps this `Task` with one error type into a `Task` with another error type.
     /// - Parameter transform: A function that transforms this `Task`'s error type into another error type.
@@ -49,6 +46,12 @@ public protocol TaskProtocol {
     static func error<R, M: Error>(_ error: M) -> Task<R, M>
 }
 
+extension TaskProtocol {
+    func perform(completion: @escaping (Result<T, E>) -> Void) {
+        self.perform(on: .main, completion: completion)
+    }
+}
+
 // MARK: - Task
 
 /// Default implementation of the `TaskProtocol`. A `Task` contains the logic for encapsulating async work.
@@ -63,8 +66,10 @@ public struct Task<T, E: Error> {
 // MARK: - TaskProtocol conformance
 
 extension Task: TaskProtocol {
-    public func perform(completion: @escaping (Result<T, E>) -> Void) {
-        work(completion)
+    public func perform(on queue: DispatchQueue, completion: @escaping (Result<T, E>) -> Void) {
+        queue.async {
+            work(completion)
+        }
     }
 
     public func map<U>(transform: @escaping (T) throws -> U) -> Task<U, Error> {
@@ -77,20 +82,6 @@ extension Task: TaskProtocol {
                     } catch {
                         completion(.failure(error))
                     }
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
-        }
-    }
-
-    public func flatMap<U>(transform: @escaping (T) -> Task<U, E>) -> Task<U, E> {
-        return .init { completion in
-            self.work { result in
-                switch result {
-                case .success(let value):
-                    let task = transform(value)
-                    task.perform(completion: completion)
                 case .failure(let error):
                     completion(.failure(error))
                 }

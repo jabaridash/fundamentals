@@ -9,8 +9,8 @@ import Foundation
 
 @testable import Core
 
-struct MockHTTPRequest: HTTPRequest {
-    typealias ResponseBody = [Int]
+struct MockHTTPRequest<T: Decodable>: HTTPRequest {
+    typealias ResponseBody = T
     
     var url: URL
     var method: HTTPMethod
@@ -23,7 +23,7 @@ struct MockHTTPRequest: HTTPRequest {
 }
 
 extension HTTPRequest {
-    static func mock(
+    static func mock<T: Decodable>(
         url: URL = URL(string: "https://google.com")!,
         method: HTTPMethod = .GET,
         headers: [String: String] = [:],
@@ -32,7 +32,7 @@ extension HTTPRequest {
         cachePolicy: NSURLRequest.CachePolicy? = nil,
         timeoutInterval: TimeInterval? = nil,
         supportsBodyForAllMethods: Bool = false
-    ) -> MockHTTPRequest {
+    ) -> MockHTTPRequest<T> {
         
         return MockHTTPRequest(
             url: url,

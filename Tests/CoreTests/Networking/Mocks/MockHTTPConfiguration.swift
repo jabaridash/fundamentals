@@ -26,7 +26,7 @@ public extension HTTPConfiguration {
         defaultParameters: [String: String] = [:],
         jsonDecoder: JSONDecoder = JSONDecoder(),
         jsonEncoder: JSONEncoder = JSONEncoder(),
-        shouldHandleStatusCode: Bool = false,
+        shouldHandleStatusCode: Bool = true,
         timeoutInterval: TimeInterval? = nil
     ) -> MockHTTPConfiguration {
         return MockHTTPConfiguration(

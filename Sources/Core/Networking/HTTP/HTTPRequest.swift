@@ -7,20 +7,6 @@
 
 import Foundation
 
-// MARK: - AnyEncodable
-
-public struct AnyEncodable: Encodable {
-    private let _encode: (Encoder) throws -> Void
-
-    public func encode(to encoder: Encoder) throws {
-        try _encode(encoder)
-    }
-    
-    public init<T: Encodable>(_ wrapped: T) {
-        _encode = wrapped.encode
-    }
-}
-
 // MARK: - HTTPRequest
 
 /// Protocol that defines the values that a request must have for use with the `HTTPService`.
@@ -70,4 +56,20 @@ public extension HTTPRequest {
     var cachePolicy: NSURLRequest.CachePolicy? { nil }
     var timeoutInterval: TimeInterval? { nil }
     var supportsBodyForAllMethods: Bool { false }
+}
+
+// MARK: - AnyEncodable
+
+/// Wrapper that erases the underly type of an `Encodable` object.
+public struct AnyEncodable: Encodable {
+    /// Calls the actual encoder.
+    private let _encode: (Encoder) throws -> Void
+
+    public func encode(to encoder: Encoder) throws {
+        try _encode(encoder)
+    }
+    
+    public init<T: Encodable>(_ wrapped: T) {
+        _encode = wrapped.encode
+    }
 }
