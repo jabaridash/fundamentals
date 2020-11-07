@@ -189,7 +189,7 @@ final class TaskSpec: QuickSpec {
                     queue.setSpecific(key: key, value: "abc-key")
                     
                     waitUntil { done in
-                        subject.perform(on: queue) { result in
+                        _ = subject.perform(on: queue) { result in
                             expect(DispatchQueue.getSpecific(key: key)) == "abc-key"
                             done()
                         }

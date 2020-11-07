@@ -21,10 +21,15 @@ public struct Task<T, E: Error> {
 // MARK: - TaskProtocol conformance
 
 extension Task: TaskProtocol {
-    public func perform(on queue: DispatchQueue, completion: @escaping (Result<T, E>) -> Void) {
-        queue.async {
+    public func perform(on queue: DispatchQueue, completion: @escaping (Result<T, E>) -> Void) -> Task<T, E> {
+        
+        // TODO - Figure out how to make cancellable
+        
+        queue.async(execute: .init {
             work(completion)
-        }
+        })
+        
+        return self
     }
 
     public func map<U>(transform: @escaping (T) throws -> U) -> Task<U, Error> {

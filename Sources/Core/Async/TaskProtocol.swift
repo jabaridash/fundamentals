@@ -18,12 +18,12 @@ public protocol TaskProtocol {
     
     /// Type of error contained in the result's `.failure` case if the task fails.
     associatedtype E: Error
-    
+
     /// Executes the task on a specified `DispatchQueue`.
     /// - Parameters:
     ///   - dispatchQuque: Specified `DispatchQueue`.
     ///   - completion: Function that contains the work to be performed.
-    func perform(on dispatchQuque: DispatchQueue, completion: @escaping (Result<T, E>) -> Void)
+    @discardableResult func perform(on dispatchQuque: DispatchQueue, completion: @escaping (Result<T, E>) -> Void) -> Task<T, E>
     
     /// Map the result of a Task into another type.
     ///
@@ -46,8 +46,12 @@ public protocol TaskProtocol {
     static func error<R, M: Error>(_ error: M) -> Task<R, M>
 }
 
+// MARK: - Helper methods
+
 extension TaskProtocol {
-    func perform(completion: @escaping (Result<T, E>) -> Void) {
-        self.perform(on: .main, completion: completion)
+    /// Executes the task on the main `DispatchQueue`.
+    /// - Parameter completion: Function that contains the work to be performed.
+    @discardableResult func perform(completion: @escaping (Result<T, E>) -> Void) -> Task<T, E> {
+        return self.perform(on: .main, completion: completion)
     }
 }
