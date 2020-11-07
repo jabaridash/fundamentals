@@ -6,10 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Core",
     products: [
-        .library(
-            name: "Core",
-            targets: ["Core"]
-        ),
+        .library(name: "Core", targets: ["Core"]),
     ],
     dependencies: [
         .package(url: "https://github.com/Quick/Quick.git", from: "1.0.0"),

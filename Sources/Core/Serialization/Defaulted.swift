@@ -9,17 +9,17 @@ import Foundation
 
 // MARK: - DefaultableType
 
-protocol DefaultableType {
+public protocol DefaultableType {
     static var defaultValue: Self { get }
 }
 
 // MARK: - Defaulted
 
 @propertyWrapper
-struct Defaulted<T: DefaultableType> {
-    var wrappedValue: T
+public struct Defaulted<T: DefaultableType> {
+    public var wrappedValue: T
     
-    init() {
+    public init() {
         self.wrappedValue = T.defaultValue
     }
     
@@ -31,7 +31,7 @@ struct Defaulted<T: DefaultableType> {
 // MARK: - Decodable onformance
 
 extension Defaulted: Decodable where T: Decodable {
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         wrappedValue = try T.init(from: decoder)
     }
 }
@@ -39,7 +39,7 @@ extension Defaulted: Decodable where T: Decodable {
 // MARK: - Encodable conformance
 
 extension Defaulted: Encodable where T: Encodable {
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         try wrappedValue.encode(to: encoder)
     }
 }
@@ -53,27 +53,32 @@ extension Defaulted: Hashable where T: Hashable {}
 // MARK: - DefaultableType conformance for common types
 
 extension Dictionary: DefaultableType {
-    static var defaultValue: [Key: Value] { [:] }
+    public static var defaultValue: [Key: Value] { [:] }
 }
 
 extension Array: DefaultableType {
-    static var defaultValue: [Element] { [] }
+    public static var defaultValue: [Element] { [] }
 }
 
 extension Bool: DefaultableType {
-    static var defaultValue: Bool { false }
+    public static var defaultValue: Bool { false }
 }
 
 extension Double: DefaultableType {
-    static var defaultValue: Double { 0 }
+    public static var defaultValue: Double { 0 }
 }
 
+extension Float: DefaultableType {
+    public static var defaultValue: Float { 0 }
+}
+
+
 extension Int: DefaultableType {
-    static var defaultValue: Int { 0 }
+    public static var defaultValue: Int { 0 }
 }
 
 extension String: DefaultableType {
-    static var defaultValue: String { "" }
+    public static var defaultValue: String { "" }
 }
 
 extension UserDefault where T: DefaultableType {
@@ -83,7 +88,7 @@ extension UserDefault where T: DefaultableType {
 }
 
 extension KeyedDecodingContainer {
-    func decode<T: Decodable>(_ type: Defaulted<T>.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Defaulted<T> {
+    public func decode<T: Decodable>(_ type: Defaulted<T>.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Defaulted<T> {
         return try decodeIfPresent(type, forKey: key) ?? Defaulted(value: T.defaultValue)
     }
 }
