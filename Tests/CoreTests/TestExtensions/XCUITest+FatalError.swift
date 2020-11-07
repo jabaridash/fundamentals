@@ -10,8 +10,6 @@ import XCTest
 
 @testable import Core
 
-// https://stackoverflow.com/questions/32873212/unit-test-fatalerror-in-swift
-
 extension XCTestCase {
     func expectFatalError(expectedMessage: String, testcase: @escaping () -> Void) {
 

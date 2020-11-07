@@ -7,6 +7,8 @@
 
 import Foundation
 
+// https://stackoverflow.com/questions/32873212/unit-test-fatalerror-in-swift
+
 struct FatalErrorUtil {
     static var fatalErrorClosure: (String, StaticString, UInt) -> Never = defaultFatalErrorClosure
     
