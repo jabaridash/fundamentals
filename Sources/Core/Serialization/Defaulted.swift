@@ -76,6 +76,12 @@ extension String: DefaultableType {
     static var defaultValue: String { "" }
 }
 
+extension UserDefault where T: DefaultableType {
+    init(_ key: UserDefaultKey) {
+        self.init(key, defaultValue: T.defaultValue)
+    }
+}
+
 extension KeyedDecodingContainer {
     func decode<T: Decodable>(_ type: Defaulted<T>.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Defaulted<T> {
         return try decodeIfPresent(type, forKey: key) ?? Defaulted(value: T.defaultValue)

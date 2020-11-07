@@ -15,11 +15,17 @@ final class InjectTest: XCTestCase {
     private var dependency: MockDependency!
     
     override func setUp() {
-        Self.container = ServiceContainer()
         dependency = MockDependency()
     }
     
+    override func tearDown() {
+        dependency = nil
+        Self.container?.clear()
+        ServiceContainer.shared.clear()
+    }
+    
     func testResolvesFromSharedContainer() {
+        Self.container = ServiceContainer()
         Self.container.register(dependency, as: MockDependency.self)
         
         let otherClass = OtherClass()

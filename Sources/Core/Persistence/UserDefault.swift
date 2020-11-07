@@ -7,44 +7,79 @@
 
 import Foundation
 
+// MARK: - UserDefaultKey
+
+/// Used with `UserDefault` for reading and writing to `UserDefaults` without directly
+/// epxosing "stringly" typed keys.
+public struct UserDefaultKey {
+    
+    /// Name of value that will be used for lookup and writing values in `UserDefaults`.
+    public let name: String
+}
+
 // MARK: - UserDefault
 
+/// Property wrapper that allows a property on an object to be backed by `UserDefaults` or some
+/// implementation of `UserDefaultsProtocol`. This object accomplishes two tasks. First, it abstracts
+/// away the calls to `data()` and `set()`. Secondly, it enforces the user to use a `Key` to lookup and
+/// update values in `UserDefaults`. This has the advantage of directly exposing read and write operations
+/// via strings because typos can no longer cause a read or write to the wrong value. The compiler will
+/// make sure that a `Key` exists. A `Key` can be created by simply adding an extension to `UserDefault.Key`
+/// with a static property of type `Key`.
+///
+///An example follows:
+/// ```
+///extension UserDefaultKey {
+///    static let hasSeenOnboarding = UserDefaultKey(name: "has-seen-onboarding")
+///    static let hasSeenNotification = UserDefaultKey(name: "has-seen-notification")
+///    static let favoriteNumbers = UserDefaultKey(name: "favorite-numbers")
+///}
+///
+///final class SomeClass {
+///    @UserDefault(.hasSeenOnboarding)
+///    var hasSeenOnboarding: Bool
+///
+///    @UserDefault(.hasSeenNotification, defaultValue: false)
+///    var hasSeenNotification: Bool
+///
+///    @UserDefault(.favoriteNumbers, defaultValue: [1], userDefaults: UserDefaults.standard)
+///    var favoriteNumbers: [Int]
+///}
+///```
+///
 @propertyWrapper
-struct UserDefault<T: Codable> {
-    let key: Key
-    let defaultValue: T
-    let userDefaults: UserDefaults
+public struct UserDefault<T: Codable> {
+    private let key: UserDefaultKey
+    private let userDefaults: UserDefaults
+    
+    /// The default value to be used if no value is found in `UserDefaults`.
+    public let defaultValue: T
 
-    init(_ key: Key, defaultValue: T, userDefaults: UserDefaults = .standard) {
+    public init(_ key: UserDefaultKey, defaultValue: T, userDefaults: UserDefaults = .standard) {
         self.key = key
         self.defaultValue = defaultValue
         self.userDefaults = userDefaults
     }
 
-    var wrappedValue: T {
+    /// Reads and writes the value to `UserDefaults`.
+    public var wrappedValue: T {
         get {
-            guard let data = userDefaults.data(forKey: key.name) else {
+            guard let data = userDefaults.object(forKey: key.name) as? Data else {
                 return defaultValue
             }
             
-            return (try? PropertyListDecoder().decode(T.self, from: data)) ?? defaultValue
+            return (try? JSONDecoder().decode(T.self, from: data)) ?? defaultValue
         }
         
         set {
-            let value = try? PropertyListEncoder().encode(newValue)
+            let value = try? JSONEncoder().encode(newValue)
             userDefaults.set(value, forKey: key.name)
         }
     }
-    
-    struct Key {
-        let name: String
-    }
 }
 
-// MARK: - DefaultableType conformance
-
 extension UserDefault where T: DefaultableType {
-    init(_ key: Key) {
-        self.init(key, defaultValue: T.defaultValue)
+    init(_ key: UserDefaultKey, userDefaults: UserDefaults = .standard) {
+        self.init(key, defaultValue: T.defaultValue, userDefaults: userDefaults)
     }
 }

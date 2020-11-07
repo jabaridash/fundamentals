@@ -17,7 +17,7 @@ struct Inject<T> {
         get { value }
     }
     
-    init(container: ServiceContainer = .shared) {
+    init(container: ServiceContainerProtocol = ServiceContainer.shared) {
         self.value = container.get(T.self)
     }
 }
