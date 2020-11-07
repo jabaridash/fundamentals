@@ -13,9 +13,11 @@ import Foundation
 struct Inject<T> {
     private var value: T
 
-    var wrappedValue: T { get { value } }
+    var wrappedValue: T {
+        get { value }
+    }
     
-    init() {
-        self.value = ServiceContainer.shared.get(T.self)
+    init(container: ServiceContainer = .shared) {
+        self.value = container.get(T.self)
     }
 }
