@@ -9,7 +9,7 @@ import Foundation
 
 // https://stackoverflow.com/questions/32873212/unit-test-fatalerror-in-swift
 
-struct FatalErrorUtil {
+internal struct FatalErrorUtil {
     static var fatalErrorClosure: (String, StaticString, UInt) -> Never = defaultFatalErrorClosure
     
     private static let defaultFatalErrorClosure = {
@@ -25,13 +25,17 @@ struct FatalErrorUtil {
     }
 }
 
-func unreachable() -> Never {
+internal func unreachable() -> Never {
     repeat {
         RunLoop.current.run()
     } while (true)
 }
 
 
-func fatalError(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) -> Never {
+internal func fatalError(
+    _ message: @autoclosure () -> String = "",
+    file: StaticString = #file,
+    line: UInt = #line
+) -> Never {
     return FatalErrorUtil.fatalErrorClosure(message(), file, line)
 }

@@ -21,6 +21,7 @@ final class MockURLSession: URLSession {
     var error: Error?
     
     var requests: [URLRequest] = []
+    
     var dataTaskCallCount = 0
     
     override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {

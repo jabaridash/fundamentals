@@ -23,7 +23,7 @@ public struct Defaulted<T: DefaultableType> {
         self.wrappedValue = T.defaultValue
     }
     
-    fileprivate init(value: T) {
+    public init(value: T) {
         self.wrappedValue = value
     }
 }
