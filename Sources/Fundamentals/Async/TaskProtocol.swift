@@ -23,7 +23,7 @@ public protocol TaskProtocol {
     /// - Parameters:
     ///   - dispatchQuque: Specified `DispatchQueue`.
     ///   - completion: Function that contains the work to be performed.
-    @discardableResult func perform(on dispatchQuque: DispatchQueue, completion: @escaping (Result<T, E>) -> Void) -> Task<T, E>
+    func perform(on dispatchQuque: DispatchQueue, completion: @escaping (Result<T, E>) -> Void)
     
     /// Map the result of a Task into another type.
     ///
@@ -51,7 +51,7 @@ public protocol TaskProtocol {
 public extension TaskProtocol {
     /// Executes the task on the main `DispatchQueue`.
     /// - Parameter completion: Function that contains the work to be performed.
-    @discardableResult func perform(completion: @escaping (Result<T, E>) -> Void) -> Task<T, E> {
-        return self.perform(on: .main, completion: completion)
+    func perform(completion: @escaping (Result<T, E>) -> Void) {
+        self.perform(on: .main, completion: completion)
     }
 }
