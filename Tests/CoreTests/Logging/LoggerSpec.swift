@@ -17,6 +17,7 @@ final class LoggerSpec: QuickSpec {
             
             beforeEach {
                 Logger.messages = []
+                shouldOverrideDate = true
                 shouldRecordLoggedMessage = true
                 
                 subject = Logger(
@@ -30,6 +31,7 @@ final class LoggerSpec: QuickSpec {
             
             afterEach {
                 Logger.messages = []
+                shouldOverrideDate = false
                 shouldRecordLoggedMessage = false
             }
             

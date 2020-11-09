@@ -7,7 +7,7 @@
 
 // MARK: - Functions for merging dictionaries
 
-extension Dictionary {
+internal extension Dictionary {
     /// Creates a new `Dictionary` that represents the combination of this `Dictionary` and the supplied`
     /// `Dictionary`. Entries in this `Dictionary` will be overriden by entries from the supplied `Dictionary`
     /// if they have the same key.

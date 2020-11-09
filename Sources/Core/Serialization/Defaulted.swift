@@ -9,20 +9,28 @@ import Foundation
 
 // MARK: - DefaultableType
 
+/// A type that can be used with the `Defaulted` property wrapper.
 public protocol DefaultableType {
+    
+    /// Default value that will be used if the wrapped value is not initially supplied.
     static var defaultValue: Self { get }
 }
 
 // MARK: - Defaulted
 
+/// Allows values to be supplied a default value. This is useful when an object is `Decodable`.
 @propertyWrapper
 public struct Defaulted<T: DefaultableType> {
+    /// The underlying value.
     public var wrappedValue: T
     
+    /// Initialzes the underlying value to its `defaultValue`.
     public init() {
         self.wrappedValue = T.defaultValue
     }
     
+    /// Initialzes the underly value with a specified initiak value.
+    /// - Parameter value: The specified initial value.
     public init(value: T) {
         self.wrappedValue = value
     }
@@ -79,12 +87,6 @@ extension Int: DefaultableType {
 
 extension String: DefaultableType {
     public static var defaultValue: String { "" }
-}
-
-extension UserDefault where T: DefaultableType {
-    init(_ key: UserDefaultKey) {
-        self.init(key, defaultValue: T.defaultValue)
-    }
 }
 
 extension KeyedDecodingContainer {

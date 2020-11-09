@@ -10,23 +10,26 @@ import Foundation
 // MARK: - ServiceContainer
 
 /// Default implementation of the `ServiceContainer`.
-public final class ServiceContainer: ServiceContainerProtocol {
+public final class ServiceContainer {
+    /// Shared singleton instance of `ServiceContainer`.
     public static let shared = ServiceContainer()
     
     /// Map that stores the instances of the services
     private var services: [AnyHashable : Any] = [:]
+}
+
+// MARK: - Conformance to ServiceContainerProtocol
+
+extension ServiceContainer: ServiceContainerProtocol {
+    public var isEmpty: Bool { services.isEmpty }
     
     public func register<T>(_ service: T, as type: T.Type) {
         services[id(for: type)] = service
     }
     
     public func get<T>(_ type: T.Type) -> T {
-        if let candidate = services[id(for: type)] {
-            if let service = candidate as? T {
-                return service
-            } else {
-                fatalError("Service found of type: \(T.Type.self) expecting service of type: \(T.Type.self)")
-            }
+        if let service = services[id(for: type)] as? T {
+            return service
         } else {
             fatalError("No service registered for type: \(String(describing: T.Type.self))")
         }
@@ -43,14 +46,11 @@ public final class ServiceContainer: ServiceContainerProtocol {
     public func clear() {
         services = [:]
     }
-    
-    public var isEmpty: Bool { services.isEmpty }
 }
 
 // MARK: - Private extensions for ServiceContainer
 
 private extension ServiceContainer {
-    
     /// Provides a `HashableType` key for the type.
     ///
     /// - Parameter type: Generic type of the service.

@@ -20,7 +20,7 @@ final class AnyEncodableSpec: QuickSpec {
             beforeEach {
                 encoder = JSONEncoder()
             }
-            
+
             it("encodes ints properly from primitive") {
                 subject = AnyEncodable(1)
                 

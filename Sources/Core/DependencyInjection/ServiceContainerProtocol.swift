@@ -11,6 +11,8 @@ import Foundation
 
 /// Defines the contract of a service container.
 protocol ServiceContainerProtocol {
+    /// Indicates whether or not any services are in the container.
+    var isEmpty: Bool { get }
     
     /// Registers a service with the service container
     /// with a specified type.
@@ -41,7 +43,4 @@ protocol ServiceContainerProtocol {
     
     /// Resets the service container to its empty state.
     func clear()
-    
-    /// Indicates whether or not any services are in the container.
-    var isEmpty: Bool { get }
 }

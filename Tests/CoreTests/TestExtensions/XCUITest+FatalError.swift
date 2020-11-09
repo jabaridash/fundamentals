@@ -6,14 +6,14 @@
 //
 
 import Foundation
+import Nimble
+@testable import Quick
 import XCTest
 
 @testable import Core
 
 extension XCTestCase {
     func expectFatalError(expectedMessage: String, testcase: @escaping () -> Void) {
-
-        // arrange
         let expectation = self.expectation(description: "expectingFatalError")
         var assertionMessage: String? = nil
 
@@ -24,14 +24,11 @@ extension XCTestCase {
             unreachable()
         }
 
-        // act, perform on separate thead because a call to fatalError pauses forever
+        // act, perform on separate thread because a call to fatalError pauses forever
         DispatchQueue.global(qos: .userInitiated).async(execute: testcase)
 
         waitForExpectations(timeout: 0.1) { _ in
-            // assert
             XCTAssertEqual(assertionMessage, expectedMessage)
-
-            // clean up
             FatalErrorUtil.restoreFatalError()
         }
     }

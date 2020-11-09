@@ -10,9 +10,29 @@ import Quick
 
 @testable import Core
 
-final class StringProtocolExtensionSpec: QuickSpec {
+final class SequenceExtensionSpec: QuickSpec {
     override func spec() {
-        describe("StringProtocol") {
+        describe("A Sequence") {
+            context("when counting a custom type") {
+                var equatables: [SomeEquatable]!
+                
+                beforeEach {
+                    equatables = [1, 2, 3, 4, 5, 5, 5].map(SomeEquatable.init)
+                }
+                
+                it("counts occurences properly") {
+                    let occurences = equatables.occurences(of: .init(id: 5))
+                    
+                    expect(occurences) == 3
+                }
+                
+                it("counts based on predicate properly") {
+                    let count = equatables.count { $0.id % 2 == 0}
+                    
+                    expect(count) == 2
+                }
+            }
+            
             context("when counting based on predicate") {
                 let alphabet = Set("abcdefghijklmnopqrstuvwzyz")
                 
@@ -52,4 +72,8 @@ final class StringProtocolExtensionSpec: QuickSpec {
             }
         }
     }
+}
+
+private struct SomeEquatable: Equatable {
+    let id: Int
 }

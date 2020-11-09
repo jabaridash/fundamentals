@@ -55,6 +55,12 @@ public struct UserDefault<T: Codable> {
     /// The default value to be used if no value is found in `UserDefaults`.
     public let defaultValue: T
 
+    /// Initializes a value without a specified `defaultValue`. The default value that
+    /// will be used will be taken from the underlying type's `defaultValue`.
+    /// - Parameters:
+    ///   - key: Key that correspondes to the underlying user default value.
+    ///   - defaultValue: Initial value that will be used if no value is present.
+    ///   - userDefaults: Instance of `UserDefaults` where wrapped value will be stored.
     public init(_ key: UserDefaultKey, defaultValue: T, userDefaults: UserDefaults = .standard) {
         self.key = key
         self.defaultValue = defaultValue
@@ -78,7 +84,21 @@ public struct UserDefault<T: Codable> {
     }
 }
 
+// MARK: - Additional initializers for convenience
+
 extension UserDefault where T: DefaultableType {
+    /// Initializes a value without a specified `defaultValue`. The default value that
+    /// will be used will be taken from the underlying type's `defaultValue`.
+    /// - Parameter key: Key that correspondes to the underlying user default value.
+    init(_ key: UserDefaultKey) {
+        self.init(key, defaultValue: T.defaultValue)
+    }
+    
+    /// Initializes a value without a specified `defaultValue`. The default value that
+    /// will be used will be taken from the underlying type's `defaultValue`.
+    /// - Parameters:
+    ///   - key: Key that correspondes to the underlying user default value.
+    ///   - userDefaults: Instance of `UserDefaults` where wrapped value will be stored.
     init(_ key: UserDefaultKey, userDefaults: UserDefaults = .standard) {
         self.init(key, defaultValue: T.defaultValue, userDefaults: userDefaults)
     }
