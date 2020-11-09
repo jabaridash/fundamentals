@@ -16,6 +16,9 @@ public final class ServiceContainer {
     
     /// Map that stores the instances of the services
     private var services: [AnyHashable : Any] = [:]
+    
+    /// Initializes a `ServiceContainer`.
+    public init() {}
 }
 
 // MARK: - Conformance to ServiceContainerProtocol
