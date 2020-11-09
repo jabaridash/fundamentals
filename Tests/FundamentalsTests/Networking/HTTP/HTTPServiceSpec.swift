@@ -235,20 +235,6 @@ final class HTTPServiceSpec: QuickSpec {
                     }
                 }
             }
-                                    
-            it("completion handler runs on correct ditpach queue when specified") {
-                waitUntil { done in
-                    let queue = DispatchQueue(label: "queue")
-                    
-                    let key = DispatchSpecificKey<String>()
-                    queue.setSpecific(key: key, value: "abc")
-                    
-                    subject.task(for: httpRequest, on: queue).perform { result in
-                        expect(DispatchQueue.getSpecific(key: key)) == "abc"
-                        done()
-                    }
-                }
-            }
             
             it("ResponseBody is decoded properly") {
                 waitUntil { done in
