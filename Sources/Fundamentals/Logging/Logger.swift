@@ -274,11 +274,6 @@ internal extension DateFormatter {
 #if DEBUG
 // MARK: - Flags
 
-/// Returns `true` if the code that is running is in a test environment.
-internal var isRunningTests: Bool {
-    return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-}
-
 /// Flag that enables storing every message that is sent to the `print()` function.
 internal var shouldRecordLoggedMessage = false
 
@@ -293,7 +288,7 @@ internal extension Logger {
 }
 
 internal func print(_ object: CustomStringConvertible) {
-    if isRunningTests && shouldRecordLoggedMessage {
+    if shouldRecordLoggedMessage {
         Logger.messages.append(String(describing: object))
     }
     
@@ -304,7 +299,7 @@ internal func print(_ object: CustomStringConvertible) {
 
 private extension Date {
     static func now() -> Date {
-        guard isRunningTests && shouldOverrideDate else {
+        guard shouldOverrideDate else {
             return Date()
         }
         
