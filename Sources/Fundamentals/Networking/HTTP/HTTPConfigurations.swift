@@ -14,7 +14,9 @@ public enum HTTPConfigurations {
     // MARK: - HTTPConfigurations.Default
 
     /// An implementation of `HTTPConfiguration` that uses all of the default values.
-    public struct Default: HTTPConfiguration {}
+    public struct Default: HTTPConfiguration {
+        public init() {}
+    }
     
     // MARK: - HTTPConfigurations.Baisc
 

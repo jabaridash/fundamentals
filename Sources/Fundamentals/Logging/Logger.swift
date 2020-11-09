@@ -24,7 +24,7 @@ public final class Logger {
     /// Initializes a `Logger` with a specified configuration. If no configuration is supplied,
     /// then `Configuration.default` will be used.
     /// - Parameter configuration: The specified configuration.
-    init(configuration: Configuration = .default) {
+    public init(configuration: Configuration = .default) {
         self.configuration = configuration
         self.dispatchQueue = configuration.executionMode == .asynchronous ?
             DispatchQueue(label: "\(type(of: self)) - \(UUID().uuidString)") : nil
