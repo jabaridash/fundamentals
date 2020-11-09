@@ -85,7 +85,7 @@ public struct UserDefault<T: Codable> {
 
 // MARK: - Additional initializers for convenience
 
-public extension UserDefault where T: DefaultableType {
+public extension UserDefault where T: Defaultable {
     /// Initializes a value without a specified `defaultValue`. The default value that
     /// will be used will be taken from the underlying type's `defaultValue`.
     /// - Parameter key: Key that correspondes to the underlying user default value.

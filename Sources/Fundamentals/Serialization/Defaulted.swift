@@ -7,10 +7,10 @@
 
 import Foundation
 
-// MARK: - DefaultableType
+// MARK: - Defaultable
 
 /// A type that can be used with the `Defaulted` property wrapper.
-public protocol DefaultableType {
+public protocol Defaultable {
     
     /// Default value that will be used if the wrapped value is not initially supplied.
     static var defaultValue: Self { get }
@@ -20,7 +20,7 @@ public protocol DefaultableType {
 
 /// Allows values to be supplied a default value. This is useful when an object is `Decodable`.
 @propertyWrapper
-public struct Defaulted<T: DefaultableType> {
+public struct Defaulted<T: Defaultable> {
     /// The underlying value.
     public var wrappedValue: T
     
@@ -60,32 +60,35 @@ extension Defaulted: Hashable where T: Hashable {}
 
 // MARK: - DefaultableType conformance for common types
 
-extension Dictionary: DefaultableType {
+extension Dictionary: Defaultable {
     public static var defaultValue: [Key: Value] { [:] }
 }
 
-extension Array: DefaultableType {
+extension Array: Defaultable {
     public static var defaultValue: [Element] { [] }
 }
 
-extension Bool: DefaultableType {
+extension Set: Defaultable {
+    public static var defaultValue: Set<Element> { [] }
+}
+
+extension Bool: Defaultable {
     public static var defaultValue: Bool { false }
 }
 
-extension Double: DefaultableType {
+extension Double: Defaultable {
     public static var defaultValue: Double { 0 }
 }
 
-extension Float: DefaultableType {
+extension Float: Defaultable {
     public static var defaultValue: Float { 0 }
 }
 
-
-extension Int: DefaultableType {
+extension Int: Defaultable {
     public static var defaultValue: Int { 0 }
 }
 
-extension String: DefaultableType {
+extension String: Defaultable {
     public static var defaultValue: String { "" }
 }
 

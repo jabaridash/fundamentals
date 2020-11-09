@@ -79,7 +79,7 @@ private struct SomeOtherContainer {
     var someDefaultableType: SomeDefaultableType
 }
 
-private struct SomeDefaultableType: DefaultableType {
+private struct SomeDefaultableType: Defaultable {
     static var defaultValue: SomeDefaultableType = .init(id: 1)
     
     let id: Int
@@ -99,6 +99,6 @@ private struct SomeStruct: Codable, Equatable {
     @Defaulted var dictionary: [Int: Int]
 }
 
-extension SomeStruct: DefaultableType {
+extension SomeStruct: Defaultable {
     static var defaultValue: SomeStruct = .init()
 }
