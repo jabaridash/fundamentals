@@ -25,15 +25,9 @@ extension Task: TaskProtocol {
         
         // TODO - Figure out how to make cancellable
         
-//        queue.async(execute: .init {
-//            work(completion)
-//        })
-        
-//        queue.async {
-//            work(completion)
-//        }
-        
-        work(completion)
+        queue.async(execute: .init {
+            work(completion)
+        })
         
         return self
     }
