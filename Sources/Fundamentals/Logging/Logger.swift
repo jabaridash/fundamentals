@@ -34,7 +34,7 @@ public final class Logger {
 // MARK: - Conform Logger to LoggerProtocol
 
 extension Logger: LoggerProtocol {
-    func all(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func all(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .all,
@@ -45,7 +45,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func trace(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func trace(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .trace,
@@ -56,7 +56,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func debug(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func debug(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .debug,
@@ -67,7 +67,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func info(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func info(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .info,
@@ -78,7 +78,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func warn(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func warn(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .warn,
@@ -89,7 +89,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func error(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func error(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .error,
@@ -100,7 +100,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    func fatal(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func fatal(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .fatal,
@@ -199,7 +199,7 @@ public extension Logger {
         case synchronous
         
         /// The default behavior for production applications is `.asynchronous`. `.synchronous` is used for debugging.
-        static let `default`: ExecutionMode = {
+        public static let `default`: ExecutionMode = {
             #if DEBUG
             return .synchronous
             #else
@@ -222,7 +222,7 @@ public extension Logger {
         
         /// Default level for `Logger`. For debugging, the `.debug` level will be used. For production,
         /// the `.info` level will be used.
-        static let `default`: Level = {
+        public static let `default`: Level = {
             #if DEBUG
             return .debug
             #else

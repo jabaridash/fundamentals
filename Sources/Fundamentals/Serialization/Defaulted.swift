@@ -52,7 +52,7 @@ extension Defaulted: Encodable where T: Encodable {
     }
 }
 
-// MARK: - Equatable conformance
+// MARK: - Equatable & Hashable conformance
 
 extension Defaulted: Equatable where T: Equatable {}
 
@@ -89,8 +89,8 @@ extension String: DefaultableType {
     public static var defaultValue: String { "" }
 }
 
-extension KeyedDecodingContainer {
-    public func decode<T: Decodable>(_ type: Defaulted<T>.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Defaulted<T> {
+public extension KeyedDecodingContainer {
+    func decode<T: Decodable>(_ type: Defaulted<T>.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Defaulted<T> {
         return try decodeIfPresent(type, forKey: key) ?? Defaulted(value: T.defaultValue)
     }
 }

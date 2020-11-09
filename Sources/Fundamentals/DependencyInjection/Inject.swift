@@ -13,14 +13,14 @@ import Foundation
 /// of `ServiceContainer`. If no container is specified, the `shared` instance will be
 /// used for resolving dependencies.
 @propertyWrapper
-struct Inject<T> {
+public struct Inject<T> {
     private var value: T
 
-    var wrappedValue: T {
+    public var wrappedValue: T {
         get { value }
     }
     
-    init(container: ServiceContainerProtocol = ServiceContainer.shared) {
+    public init(container: ServiceContainerProtocol = ServiceContainer.shared) {
         self.value = container.get(T.self)
     }
 }

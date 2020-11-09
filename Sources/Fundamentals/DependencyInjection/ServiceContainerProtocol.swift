@@ -10,7 +10,7 @@ import Foundation
 // MARK: - ServiceContainerProtocol
 
 /// Defines the contract of a service container.
-protocol ServiceContainerProtocol {
+public protocol ServiceContainerProtocol {
     /// Indicates whether or not any services are in the container.
     var isEmpty: Bool { get }
     

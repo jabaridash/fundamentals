@@ -10,7 +10,7 @@ import Foundation
 // MARK: - HTTPConfigurations
 
 /// Contains concrete implementations of `HTTPConfiguration` for easy reuse.
-enum HTTPConfigurations {
+public enum HTTPConfigurations {
     // MARK: - HTTPConfigurations.Default
 
     /// An implementation of `HTTPConfiguration` that uses all of the default values.

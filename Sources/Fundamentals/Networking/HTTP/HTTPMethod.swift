@@ -43,7 +43,7 @@ public enum HTTPMethod: String {
     /// commonly used except in `PUT`, `POST` and `PATCH`. Because of this, they may not be supported properly
     /// by some client frameworks, and you should not allow request bodies for `GET`, `DELETE`, `TRACE`, `OPTIONS`
     /// and `HEAD` methods.
-    var supportsBody: Bool {
+    public var supportsBody: Bool {
         switch self {
         case .GET, .DELETE, .TRACE, .OPTIONS, .HEAD, .CONNECT:
             return false

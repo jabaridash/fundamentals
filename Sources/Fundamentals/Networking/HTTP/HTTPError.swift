@@ -45,7 +45,7 @@ public enum HTTPError: LocalizedError {
     case unrecognizedStatusCode(_ response: HTTPURLResponse, data: Data)
     
     /// Describes the type of error that occured.
-    var message: String {
+    public var message: String {
         switch self {
         case .encodingFailure(let error):
             return "Encoding failure: \(error)"

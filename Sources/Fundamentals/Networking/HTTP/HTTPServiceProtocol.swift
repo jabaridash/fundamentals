@@ -20,7 +20,7 @@ public protocol HTTPServiceProtocol {
 
 // MARK: - Helper functions that provide default values
 
-extension HTTPServiceProtocol {
+public extension HTTPServiceProtocol {
     /// Returns a `Task` that will execute `HTTPRequest` and decode the response. This function
     /// does not specify which `DispatchQueue` to dispatch back to.
     /// - Parameter request: Specified request to execute.

@@ -9,8 +9,7 @@ import Foundation
 
 // MARK: - UserDefaultKey
 
-/// Used with `UserDefault` for reading and writing to `UserDefaults` without directly
-/// epxosing "stringly" typed keys.
+/// Used with `UserDefault` for reading and writing to `UserDefaults` without directly exposing "stringly" typed keys.
 public struct UserDefaultKey {
     
     /// Name of value that will be used for lookup and writing values in `UserDefaults`.
@@ -86,7 +85,7 @@ public struct UserDefault<T: Codable> {
 
 // MARK: - Additional initializers for convenience
 
-extension UserDefault where T: DefaultableType {
+public extension UserDefault where T: DefaultableType {
     /// Initializes a value without a specified `defaultValue`. The default value that
     /// will be used will be taken from the underlying type's `defaultValue`.
     /// - Parameter key: Key that correspondes to the underlying user default value.

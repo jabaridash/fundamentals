@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - LoggerProtocol
 
-protocol LoggerProtocol {
+public protocol LoggerProtocol {
     /// Logs a message with the `ALL` log level.
     /// - Parameters:
     ///   - message: Specified message to log.
@@ -76,7 +76,7 @@ protocol LoggerProtocol {
 
 // MARK: - Helper implentations
 
-extension LoggerProtocol {
+public extension LoggerProtocol {
     func all(
         _ message: CustomStringConvertible,
         fileName: String = #file,

@@ -48,7 +48,7 @@ public protocol TaskProtocol {
 
 // MARK: - Helper methods
 
-extension TaskProtocol {
+public extension TaskProtocol {
     /// Executes the task on the main `DispatchQueue`.
     /// - Parameter completion: Function that contains the work to be performed.
     @discardableResult func perform(completion: @escaping (Result<T, E>) -> Void) -> Task<T, E> {
