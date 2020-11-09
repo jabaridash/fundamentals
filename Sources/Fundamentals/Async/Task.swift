@@ -29,9 +29,11 @@ extension Task: TaskProtocol {
 //            work(completion)
 //        })
         
-        queue.async {
-            work(completion)
-        }
+//        queue.async {
+//            work(completion)
+//        }
+        
+        work(completion)
         
         return self
     }
