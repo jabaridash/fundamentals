@@ -4,16 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "Core",
+    name: "Fundamentals",
     products: [
-        .library(name: "Core", targets: ["Core"]),
+        .library(name: "Fundamentals", targets: ["Fundamentals"]),
     ],
     dependencies: [
         .package(url: "https://github.com/Quick/Quick.git", from: "1.0.0"),
         .package(url: "https://github.com/Quick/Nimble.git", from: "7.0.0"),
     ],
     targets: [
-        .target(name: "Core", dependencies: []),
-        .testTarget(name: "CoreTests", dependencies: ["Core", "Quick", "Nimble"]),
+        .target(name: "Fundamentals", dependencies: []),
+        .testTarget(name: "FundamentalsTests", dependencies: ["Fundamentals", "Quick", "Nimble"]),
     ]
 )
