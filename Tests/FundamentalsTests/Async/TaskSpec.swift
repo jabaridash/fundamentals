@@ -158,6 +158,25 @@ final class TaskSpec: QuickSpec {
                     task4 = .just(4)
                 }
                 
+                it("completion runs on correct DispatchQueue") {
+                    let q1 = DispatchQueue(label: "q1", attributes: .concurrent)
+                    let q2 = DispatchQueue(label: "q2", attributes: .concurrent)
+                    let q3 = DispatchQueue(label: "q3", attributes: .concurrent)
+                    
+                    let t1: Task<Int, Error> = .init { callback in q1.async { callback (.success(1)) } }
+                    let t2: Task<Int, Error> = .init { callback in q2.async { callback (.success(1)) } }
+                    let tasks = [t1, t2].map { $0.map { $0 as Any } }
+
+                    let t3 = Task<Any, Error>.merge(tasks)
+                    
+                    waitUntil { done in
+                        t3.perform(queue: q3) { _ in
+                            expect(DispatchQueue.currentLabel) == "q3"
+                            done()
+                        }
+                    }
+                }
+                
                 it("merges array of tasks with Task.merge") {
                     let tasks = [
                         task1!,

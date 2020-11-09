@@ -13,6 +13,8 @@ import Foundation
 public struct Task<T, E: Error> {
     private let work: ((_ completion: @escaping (Result<T, E>) -> Void) -> Void)
 
+    /// Initializes a task with a specified body of work to run at a later point in execution.
+    /// - Parameter work: Specified body of work that will run upon invocation of the `perform()` method.
     public init(work: @escaping (_ completion: @escaping (Result<T, E>) -> Void) -> Void) {
         self.work = work
     }
@@ -148,7 +150,7 @@ public extension Task {
         return .init { completion in
             let group = DispatchGroup()
             
-            // Synchronizes reads and write the non-thread-safe varialbes (values, taskError)
+            // Synchronizes reads and write the non-thread-safe variables (values, taskError)
             let lock = NSRecursiveLock()
             
             var values: [T?] = .init(repeating: nil, count: tasks.count)

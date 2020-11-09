@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - LoggerProtocol
 
+/// Defines the behavior for an object that is capable of logging at several logging levels.
 public protocol LoggerProtocol {
     /// Logs a message with the `ALL` log level.
     /// - Parameters:

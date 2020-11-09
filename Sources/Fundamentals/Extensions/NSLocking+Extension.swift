@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NSLocking {
+internal extension NSLocking {
     func sync(_ work: @escaping () -> Void) {
         lock()
         defer { unlock() }
