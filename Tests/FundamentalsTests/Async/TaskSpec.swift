@@ -311,8 +311,11 @@ final class TaskSpec: QuickSpec {
                     var sum: Int!
 
                     async {
-                        let one = try await(.just(1))
-                        let two = try await(.just(2))
+                        let t1: Task<Int, Error> = .just(1)
+                        let t2: Task<Int, MockError> = .just(2)
+                        
+                        let one = try await(t1)
+                        let two = try await(t2)
                         
                         sum = one + two
                     }
@@ -321,16 +324,22 @@ final class TaskSpec: QuickSpec {
                 }
                 
                 it("returns value properly") {
+                    let t1: Task<Int, Error> = .just(1)
+                    let t2: Task<Int, Error> = .just(2)
+                    
                     waitUntil { done in
-                        async {
-                            (try await(.just(1))) + (try await(.just(2)))
+                        async { () -> Int in
+                            let left = try await(t1)
+                            let right = try await(t2)
+
+                            return left + right
                         }
                         .perform { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
                             }
-                            
+
                             expect(value) == 3
                             done()
                         }
@@ -340,14 +349,18 @@ final class TaskSpec: QuickSpec {
                 it("handles error properly") {
                     waitUntil { done in
                         async {
-                            (try await(.just(1))) + (try await(.error(MockError.basicError)))
+                            let t1: Task<Int, Error> = .just(1)
+                            let t2: Task<Int, MockError> = .error(.basicError)
+                            
+                            try await(t1)
+                            try await(t2)
                         }
                         .perform { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
                             }
-                            
+
                             expect(error as? MockError) == .basicError
                             done()
                         }

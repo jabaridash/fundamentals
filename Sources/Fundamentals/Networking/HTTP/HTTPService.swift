@@ -14,7 +14,7 @@ public final class HTTPService {
     /// The shared singleton `HTTPService` instance.
     public static let shared: HTTPService = .init(
         session: .shared,
-        httpConfiguration: HTTPConfigurations.Default()
+        httpConfiguration: .default
     )
     
     /// Contains properties that influece encoding, decoding, and handling of HTTP responses.

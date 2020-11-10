@@ -203,10 +203,10 @@ public func async(on queue: DispatchQueue = .global(qos: .default), _ work: @esc
     async(on: queue, work).perform { _ in }
 }
 
-@discardableResult public func await<T>(_ task: Task<T, Error>) throws -> T {
+@discardableResult public func await<T, E: Error>(_ task: Task<T, E>) throws -> T {
     let semaphore = DispatchSemaphore(value: 0)
     
-    var result: Result<T, Error>!
+    var result: Result<T, E>!
     
     task.perform(queue: nil) {
         defer { semaphore.signal() }

@@ -7,43 +7,33 @@
 
 import Foundation
 
-// MARK: - HTTPServiceConfiguration
+// MARK: - HTTPServiceConfigurationProtocol
 
 /// Provides information that helps determine how to encode outgoing requests, and decode and handle incoming responses.
-public protocol HTTPConfiguration {
+public struct HTTPConfiguration {
+    public static let `default`: HTTPConfiguration = .init()
+    
     /// Specifies how to address HTTP caching.
-    var cachePolicy: NSURLRequest.CachePolicy? { get }
+    public var cachePolicy: NSURLRequest.CachePolicy? = nil
     
     /// Default headers that will be used with all outgoing requests.
-    var defaultHeaders: [String: String] { get }
+    public var defaultHeaders: [String: String] = [:]
     
     /// Default URL parameters that will be sent with every `HTTPRequest`.
-    var defaultParameters: [String: String] { get }
+    public var defaultParameters: [String: String] = [:]
 
     /// Decodes the HTTP body incoming responses.
-    var jsonDecoder: JSONDecoder { get }
+    public var jsonDecoder: JSONDecoder = JSONDecoder()
     
     /// Encodes the HTTP body outgoing requests.
-    var jsonEncoder: JSONEncoder { get }
+    public var jsonEncoder: JSONEncoder = JSONEncoder()
     
     /// Determines whether or not the status code of a response should be handled. If this value is `false`,
     /// all responses that come back with `Data` will be treated as a `.success` type. Otherwise, only responses
     /// with a `2XX` status code will be treated as `.success`. All other status codes will be considered a `.failure`,
     /// with an associated value that details the specified type of failure along with its status code.
-    var shouldHandleStatusCode: Bool { get }
+    public var shouldHandleStatusCode: Bool = true
     
     /// Number of seconds before timing out.
-    var timeoutInterval: TimeInterval? { get }
-}
-
-// MARK: - Default implementations for properties on `HTTPServiceConfiguration`.
-
-public extension HTTPConfiguration {
-    var cachePolicy: NSURLRequest.CachePolicy? { nil }
-    var defaultHeaders: [String: String] { [:] }
-    var defaultParameters: [String: String] { [:] }
-    var jsonDecoder: JSONDecoder { JSONDecoder() }
-    var jsonEncoder: JSONEncoder { JSONEncoder() }
-    var shouldHandleStatusCode: Bool { true }
-    var timeoutInterval: TimeInterval? { nil }
+    public var timeoutInterval: TimeInterval? = nil
 }

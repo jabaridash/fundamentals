@@ -16,13 +16,13 @@ final class HTTPServiceSpec: QuickSpec {
         describe("An HTTPService") {
             var subject: HTTPService!
             var urlSession: MockURLSession!
-            var httpConfiguration: MockHTTPConfiguration!
+            var httpConfiguration: HTTPConfiguration!
             var httpRequest: MockHTTPRequest<[Int]>!
             
             beforeEach {
                 httpRequest = .mock()
                 urlSession = .mock()
-                httpConfiguration = .mock()
+                httpConfiguration = .init()
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -33,7 +33,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.informational when status code is 1XX") {
                 urlSession.response = HTTPURLResponse(statusCode: 100)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -58,7 +58,7 @@ final class HTTPServiceSpec: QuickSpec {
             }
             
             it("success when status code is non 2XX and status handling is off") {
-                httpConfiguration = .mock(shouldHandleStatusCode: false)
+                httpConfiguration = .init(shouldHandleStatusCode: false)
                 
                 urlSession.response = HTTPURLResponse(
                     url: URL(string: "https://google.com")!,
@@ -88,7 +88,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.redirection when status code is 3XX") {
                 urlSession.response = HTTPURLResponse(statusCode: 300)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -115,7 +115,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.clientError when status code is 4XX") {
                 urlSession.response = HTTPURLResponse(statusCode: 400)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -142,7 +142,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.unrecognizedStatusCode when status code is invalid") {
                 urlSession.response = HTTPURLResponse(statusCode: 600)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -169,7 +169,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.unrecognizedStatusCode when status code is less than 100") {
                 urlSession.response = HTTPURLResponse(statusCode: -1)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -196,7 +196,7 @@ final class HTTPServiceSpec: QuickSpec {
             it("returns HTTPError.clientError when status code is 5XX") {
                 urlSession.response = HTTPURLResponse(statusCode: 500)
                 
-                httpConfiguration = .mock(shouldHandleStatusCode: true)
+                httpConfiguration = .init(shouldHandleStatusCode: true)
                 
                 subject = HTTPService(
                     session: urlSession,
@@ -292,7 +292,7 @@ final class HTTPServiceSpec: QuickSpec {
                 let decoder = MockJSONDecoder()
                 decoder.result = .failure(MockJSONDecoder.DecodeError.mockError)
                 
-                httpConfiguration = .mock(jsonDecoder: decoder)
+                httpConfiguration = .init(jsonDecoder: decoder)
                 
                 subject = .init(
                     session: urlSession,
@@ -323,7 +323,7 @@ final class HTTPServiceSpec: QuickSpec {
                 let encoder = MockJSONEncoder()
                 encoder.result = .failure(MockJSONEncoder.EncodeError.mockError)
                 
-                httpConfiguration = .mock(jsonEncoder: encoder)
+                httpConfiguration = .init(jsonEncoder: encoder)
                 
                 subject = .init(
                     session: urlSession,
@@ -371,7 +371,7 @@ final class HTTPServiceSpec: QuickSpec {
             }
                         
             it("HTTPConfigutation configures URLRequest") {
-                httpConfiguration = .mock(
+                httpConfiguration = .init(
                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                     defaultHeaders: ["Authorization": "abc123", "X-API-KEY": "123"],
                     defaultParameters: ["id": "abc", "page": "2", "size": "2"],
@@ -409,7 +409,7 @@ final class HTTPServiceSpec: QuickSpec {
             }
             
             it("URLRequest is built properly") {
-                httpConfiguration = .mock(
+                httpConfiguration = .init(
                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                     defaultHeaders: ["Authorization": "abc123", "X-API-KEY": "123"],
                     defaultParameters: ["id": "abc", "page": "2", "size": "2"],

@@ -14,6 +14,10 @@ public struct UserDefaultKey {
     
     /// Name of value that will be used for lookup and writing values in `UserDefaults`.
     public let name: String
+    
+    public init(name: String) {
+        self.name = name
+    }
 }
 
 // MARK: - UserDefault
