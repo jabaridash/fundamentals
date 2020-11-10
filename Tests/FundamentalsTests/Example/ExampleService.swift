@@ -36,20 +36,10 @@ extension ExampleService: ExampleServiceProtocol {
     func load(_ completion: @escaping (Result<User, HTTPError>) -> Void) {
         getId()
             .map(String.init)
-            .mapError { $0 as! HTTPError }
             .flatMap(getDetails)
+            .recover { _ in .placeholder() }
             .perform { [weak self] result in
-                guard let self = self else { return }
-                
-                switch result {
-                case .failure(let error):
-                    self.logger.error("Request failed: \(error)")
-                case .success(let user):
-                    self.logger.info("Request succeeded: \(user)")
-                    self.user = user
-                    self.usersLoaded += 1
-                }
-                
+                self?.handle(result)
                 completion(result)
             }
     }
@@ -58,38 +48,37 @@ extension ExampleService: ExampleServiceProtocol {
 // MARK: - Helper methods
 
 private extension ExampleService {
+    func handle(_ result: Result<User, HTTPError>) {
+        switch result {
+        case .failure(let error):
+            logger.error("Request failed: \(error)")
+        case .success(let user):
+            logger.info("Request succeeded: \(user)")
+            self.user = user
+            usersLoaded += 1
+        }
+    }
+    
     func getId() -> Task<Int, HTTPError> {
         logger.debug("Getting user id")
         
         return .init { completion in
-            DispatchQueue.global(qos: .background).async { [weak self] in
-                guard let self = self else { return }
-                
-                let id: Int = 1
-                
-                self.logger.debug("Successfully fetched id: \(id)")
-                
-                completion(.success(id))
+            DispatchQueue.global(qos: .background).async {
+                completion(.success(1))
             }
         }
     }
     
     func getDetails(_ id: String) -> Task<User, HTTPError> {
-        let task1 = httpService.task(for: UserRequest(id: id))
-        let task2 = httpService.task(for: TransactionsRequest())
-         
-        return .init { completion in
-            async {
-                do {
-                    var user = try await(task1)
-
-                    user.transactions = try await(task2)
-
-                    completion(.success(user))
-                } catch {
-                    completion(.failure(.invalidResponse))
-                }
-            }
-        }
+        let t1 = httpService.task(for: UserRequest(id: id))
+        let t2 = httpService.task(for: TransactionsRequest())
+        
+        return async { () -> User in
+            var user = try await(t1)
+            
+            user.transactions = try await(t2)
+            
+            return user
+        }.mapError { _ in .invalidResponse }
     }
 }

@@ -33,16 +33,12 @@ extension Task: TaskProtocol {
         }
     }
 
-    public func map<U>(_ transform: @escaping (T) throws -> U) -> Task<U, Error> {
+    public func map<U>(_ transform: @escaping (T) -> U) -> Task<U, E> {
         return .init { completion in
             work { result in
                 switch result {
                 case .success(let value):
-                    do {
-                        completion(.success(try transform(value)))
-                    } catch {
-                        completion(.failure(error))
-                    }
+                    completion(.success(transform(value)))
                 case .failure(let error):
                     completion(.failure(error))
                 }

@@ -487,23 +487,7 @@ final class TaskSpec: QuickSpec {
                                 return
                             }
             
-                            expect(error as? MockError) == .basicError
-                            done()
-                        }
-                    }
-                }
-                
-                it("new error type can be resolved if map() throws") {
-                    subject = .just(1)
-                    
-                    waitUntil { done in
-                        subject.map { _ in throw MappedError.anotherError }.perform { result in
-                            guard case let .failure(error as MappedError) = result else {
-                                fail("\(result)")
-                                return
-                            }
-                            
-                            expect(error) == .anotherError
+                            expect(error) == .basicError
                             done()
                         }
                     }

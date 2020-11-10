@@ -29,7 +29,7 @@ public protocol TaskProtocol {
     ///
     /// - Parameter transform: Function that transforms the Tasks result type into a new type.
     /// - Returns: A Task with the result as the new type.
-    func map<U>(_ transform: @escaping (T) throws -> U) -> Task<U, Error>
+    func map<U>(_ transform: @escaping (T) -> U) -> Task<U, E>
     
     /// Enables chaining of dependent asynchronous tasks.
     /// - Parameter transform: Asynchronous body of work that depends on this task's completion.
