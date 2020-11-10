@@ -14,7 +14,7 @@ public final class HTTPService {
     /// The shared singleton `HTTPService` instance.
     public static let shared: HTTPService = .init(
         session: .shared,
-        httpConfiguration: HTTPConfigurations.Default()
+        httpConfiguration: .default
     )
     
     /// Contains properties that influece encoding, decoding, and handling of HTTP responses.
@@ -36,20 +36,9 @@ public final class HTTPService {
 // MARK: - HTTPService conformance
 
 extension HTTPService: HTTPServiceProtocol {
-    public func task<R: HTTPRequest>(for request: R, on dispatchQueue: DispatchQueue?) -> Task<R.ResponseBody, HTTPError> {
+    public func task<R: HTTPRequest>(for request: R) -> Task<R.ResponseBody, HTTPError> {
         return .init { [weak self] completion in
             guard let self = self else { return }
-            
-            // Dispatches the completion back onto the appropriate dispatch queue if necessary.
-            let callback: (Result<R.ResponseBody, HTTPError>) -> Void
-            
-            if let dispatchQueue = dispatchQueue {
-                callback = { arg in
-                    dispatchQueue.async { completion(arg) }
-                }
-            } else {
-                callback = completion
-            }
             
             var urlComponents = URLComponents(url: request.url, resolvingAgainstBaseURL: true)
             
@@ -62,7 +51,7 @@ extension HTTPService: HTTPServiceProtocol {
             
             // Convert URLComponents into standard URL object
             guard let url = urlComponents?.url else {
-                callback(.failure(.invalidURLComponentsURL))
+                completion(.failure(.invalidURLComponentsURL))
                 return
             }
             
@@ -83,7 +72,7 @@ extension HTTPService: HTTPServiceProtocol {
                 do {
                     urlRequest.httpBody = try self.httpConfiguration.jsonEncoder.encode(body)
                 } catch {
-                    callback(.failure(.encodingFailure(error)))
+                    completion(.failure(.encodingFailure(error)))
                     return
                 }
             }
@@ -116,12 +105,12 @@ extension HTTPService: HTTPServiceProtocol {
                                 from: response.data
                             )
                             
-                            callback(.success(body))
+                            completion(.success(body))
                         } catch {
-                            callback(.failure(.decodingFailure(error)))
+                            completion(.failure(.decodingFailure(error)))
                         }
                     case .failure(let error):
-                        callback(.failure(error))
+                        completion(.failure(error))
                     }
                 }
             }.resume()

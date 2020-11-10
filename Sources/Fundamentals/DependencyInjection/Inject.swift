@@ -20,7 +20,7 @@ public struct Inject<T> {
         get { value }
     }
     
-    public init(container: ServiceContainerProtocol = ServiceContainer.shared) {
+    public init(from container: ServiceContainer = ServiceContainer.shared) {
         self.value = container.get(T.self)
     }
 }

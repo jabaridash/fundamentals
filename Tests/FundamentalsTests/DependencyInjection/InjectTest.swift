@@ -73,6 +73,6 @@ fileprivate class SomeClass {
 }
 
 fileprivate class OtherClass {
-    @Inject(container: InjectTest.container)
+    @Inject(from: InjectTest.container)
     var dependency: MockDependency
 }

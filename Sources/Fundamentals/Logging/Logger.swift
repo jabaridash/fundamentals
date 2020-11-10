@@ -34,7 +34,7 @@ public final class Logger {
 // MARK: - Conform Logger to LoggerProtocol
 
 extension Logger: LoggerProtocol {
-    public func all(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func all(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .all,
@@ -45,7 +45,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func trace(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func trace(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .trace,
@@ -56,7 +56,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func debug(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func debug(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .debug,
@@ -67,7 +67,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func info(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func info(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .info,
@@ -78,7 +78,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func warn(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func warn(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .warn,
@@ -89,7 +89,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func error(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func error(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .error,
@@ -100,7 +100,7 @@ extension Logger: LoggerProtocol {
         )
     }
     
-    public func fatal(_ message: CustomStringConvertible, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
+    public func fatal(_ message: Any, fileName: String, functionName: String, lineNumber: Int, columnNumber: Int) {
         self.log(
             message,
             logLevel: .fatal,
@@ -125,7 +125,7 @@ private extension Logger {
     ///   - lineNumber: The line number in the file that called this function.
     ///   - columnNumber: The column (character number) of the line within the file that called this function.
     func log(
-        _ message: CustomStringConvertible,
+        _ message: Any,
         logLevel: Level,
         fileName: String,
         functionName: String,
@@ -274,11 +274,6 @@ internal extension DateFormatter {
 #if DEBUG
 // MARK: - Flags
 
-/// Returns `true` if the code that is running is in a test environment.
-internal var isRunningTests: Bool {
-    return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-}
-
 /// Flag that enables storing every message that is sent to the `print()` function.
 internal var shouldRecordLoggedMessage = false
 
@@ -292,8 +287,8 @@ internal extension Logger {
     static var messages: [String] = []
 }
 
-internal func print(_ object: CustomStringConvertible) {
-    if isRunningTests && shouldRecordLoggedMessage {
+internal func print(_ object: Any) {
+    if shouldRecordLoggedMessage {
         Logger.messages.append(String(describing: object))
     }
     
@@ -304,7 +299,7 @@ internal func print(_ object: CustomStringConvertible) {
 
 private extension Date {
     static func now() -> Date {
-        guard isRunningTests && shouldOverrideDate else {
+        guard shouldOverrideDate else {
             return Date()
         }
         
