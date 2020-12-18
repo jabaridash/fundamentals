@@ -9,8 +9,6 @@ import Foundation
 
 // MARK: - TaskProtocol
 
-// TODO - Implement retry(), cancel(), timeout()
-
 /// Protocol that describes the behavior of a task.
 public protocol TaskProtocol {
     /// Type of value contained in the result's `.success` case if the task succeeds.
@@ -23,7 +21,7 @@ public protocol TaskProtocol {
     /// - Parameters:
     ///   - queue: Specified `DispatchQueue`.
     ///   - completion: Function that contains the work to be performed.
-    func perform(queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void)
+    func run(on queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void)
     
     /// Map the result of a `Task` into another type.
     ///
@@ -58,7 +56,7 @@ public protocol TaskProtocol {
     /// - Parameters:
     ///   - task1: The first task.
     ///   - task2: The second task.
-    static func all<T1, T2>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>) -> Task<(T1, T2), Error>
+    static func join<T1, T2>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>) -> Task<(T1, T2), Error>
     
     /// Merges the results of three `Task`s into a single `Task`. Each `Task` will be executed concurrently.
     /// if one task fails, the entire task will fail and resolve the first encountered error.
@@ -66,7 +64,7 @@ public protocol TaskProtocol {
     ///   - task1: The first task.
     ///   - task2: The second task.
     ///   - task3: The third task.
-    static func all<T1, T2, T3>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>) -> Task<(T1, T2, T3), Error>
+    static func join<T1, T2, T3>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>) -> Task<(T1, T2, T3), Error>
     
     /// Merges the results of four `Task`s into a single `Task`. Each `Task` will be executed concurrently.
     /// if one task fails, the entire task will fail and resolve the first encountered error.
@@ -75,7 +73,7 @@ public protocol TaskProtocol {
     ///   - task2: The second task.
     ///   - task3: The third task.
     ///   - task4: The fourth task.
-    static func all<T1, T2, T3, T4>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>,  _ task4: Task<T4, Error>) -> Task<(T1, T2, T3, T4), Error>
+    static func join<T1, T2, T3, T4>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>,  _ task4: Task<T4, Error>) -> Task<(T1, T2, T3, T4), Error>
     
     /// Merges the results of an array of tasks into a single task. Each task will be executed concurrently,
     /// assuming that the supplied workload is an asynchronous workload. If one of the tasks fails, the resolved
@@ -93,7 +91,7 @@ public protocol TaskProtocol {
 public extension TaskProtocol {
     /// Executes the completion on `DispatchQueue.main`.
     /// - Parameter completion: Function that contains the work to be performed.
-    func perform(completion: @escaping (Result<T, E>) -> Void) {
-        self.perform(queue: .main, completion: completion)
+    func run(completion: @escaping (Result<T, E>) -> Void) {
+        self.run(on: .main, completion: completion)
     }
 }

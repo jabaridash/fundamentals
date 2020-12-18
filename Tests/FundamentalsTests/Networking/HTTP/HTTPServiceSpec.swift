@@ -41,7 +41,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .informational(response, data) = error
@@ -73,7 +73,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard case let .success(value) = result else {
                             fail("\(result)")
                             return
@@ -96,7 +96,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .redirection(response, data) = error
@@ -123,7 +123,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .clientError(response, data) = error
@@ -150,7 +150,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .unrecognizedStatusCode(response, data) = error
@@ -177,7 +177,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .unrecognizedStatusCode(response, data) = error
@@ -204,7 +204,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(error) = result,
                             case let .serverError(response, data) = error
@@ -224,7 +224,7 @@ final class HTTPServiceSpec: QuickSpec {
                 urlSession.data = nil
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard case let .failure(error) = result else {
                             fail("\(result)")
                             return
@@ -246,7 +246,7 @@ final class HTTPServiceSpec: QuickSpec {
                         headerFields: httpRequest.headers
                     )
                     
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         switch result {
                         case .success(let value):
                             expect(value) == [1, 2, 3]
@@ -276,7 +276,7 @@ final class HTTPServiceSpec: QuickSpec {
                 let request: MockHTTPRequest<CustomResponseBody> = .mock()
                 
                 waitUntil { done in
-                    subject.task(for: request).perform { result in
+                    subject.task(for: request).run { result in
                         guard case let .success(actual) = result else {
                             fail("\(result)")
                             return
@@ -302,7 +302,7 @@ final class HTTPServiceSpec: QuickSpec {
                 httpRequest.method = .DELETE
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         expect(decoder.decodeCallCount) == 1
                         
                         guard
@@ -334,7 +334,7 @@ final class HTTPServiceSpec: QuickSpec {
                 httpRequest.body = .init([1, 2, 3])
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         expect(encoder.encodeCallCount) == 1
                         
                         guard
@@ -355,7 +355,7 @@ final class HTTPServiceSpec: QuickSpec {
                 urlSession.error = MockError.httpRequestFailed
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard
                             case let .failure(httpError) = result,
                             case let .urlSession(error as MockError) = httpError
@@ -389,7 +389,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         switch result {
                         case .failure(let error):
                             fail("\(error)")
@@ -436,7 +436,7 @@ final class HTTPServiceSpec: QuickSpec {
                 )
  
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { _ in
+                    subject.task(for: httpRequest).run { _ in
                         let request = urlSession.requests.last
                                         
                         expect(request?.url?.scheme) == "https"
@@ -465,7 +465,7 @@ final class HTTPServiceSpec: QuickSpec {
                 urlSession.error = nil
                 
                 waitUntil { done in
-                    subject.task(for: httpRequest).perform { result in
+                    subject.task(for: httpRequest).run { result in
                         guard case let .failure(error) = result else {
                             fail("\(result)")
                             return

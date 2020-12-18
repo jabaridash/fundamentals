@@ -52,7 +52,7 @@ final class TaskSpec: QuickSpec {
                                         .flatMap(toString)
                     
                     waitUntil { done in
-                        finalTask.perform { result in
+                        finalTask.run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -69,7 +69,7 @@ final class TaskSpec: QuickSpec {
                     let task: Task<Int, Error> = .just(1)
                     
                     waitUntil { done in
-                        task.flatMap { _ in Task<String, Error>.just("some-string") }.perform(queue: queue) { _ in
+                        task.flatMap { _ in Task<String, Error>.just("some-string") }.run(on: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -80,7 +80,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         let task: Task<Int, Error> = .just(1)
                         
-                        task.flatMap { Task<String, Error>.just("value: \($0)") }.perform { result in
+                        task.flatMap { Task<String, Error>.just("value: \($0)") }.run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -100,7 +100,7 @@ final class TaskSpec: QuickSpec {
                     }
                     
                     waitUntil { done in
-                        task.perform { result in
+                        task.run { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
@@ -118,7 +118,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         Task<Int, MockError> { $0(.failure(.basicError)) }
                         .recover { _ in return 1 }
-                        .perform { result in
+                        .run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -137,7 +137,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         task
                             .recover { _ in 1}
-                            .perform(queue: queue) { _ in
+                            .run(on: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -170,7 +170,7 @@ final class TaskSpec: QuickSpec {
                     let t3 = Task<Any, Error>.merge(tasks)
                     
                     waitUntil { done in
-                        t3.perform(queue: q3) { _ in
+                        t3.run(on: q3) { _ in
                             expect(DispatchQueue.currentLabel) == "q3"
                             done()
                         }
@@ -186,7 +186,7 @@ final class TaskSpec: QuickSpec {
                     ].map { $0.map { $0 as Any } }
                                         
                     waitUntil { done in
-                        Task<Any, Error>.merge(tasks).perform { result in
+                        Task<Any, Error>.merge(tasks).run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -203,7 +203,7 @@ final class TaskSpec: QuickSpec {
                 
                 it("merges 2 tasks with Task.all") {
                     waitUntil { done in
-                        Task<(Int, Int), Error>.all(task1, task2).perform { result in
+                        Task<(Int, Int), Error>.join(task1, task2).run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -218,7 +218,7 @@ final class TaskSpec: QuickSpec {
                 
                 it("merges 3 tasks with Task.all") {
                     waitUntil { done in
-                        Task<(Int, Int), Error>.all(task1, task2, task3).perform { result in
+                        Task<(Int, Int), Error>.join(task1, task2, task3).run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -234,7 +234,7 @@ final class TaskSpec: QuickSpec {
                 
                 it("merges 4 tasks with Task.all") {
                     waitUntil { done in
-                        Task<(Int, Int), Error>.all(task1, task2, task3, task4).perform { result in
+                        Task<(Int, Int), Error>.join(task1, task2, task3, task4).run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -334,7 +334,7 @@ final class TaskSpec: QuickSpec {
 
                             return left + right
                         }
-                        .perform { result in
+                        .run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -355,7 +355,7 @@ final class TaskSpec: QuickSpec {
                             try await(t1)
                             try await(t2)
                         }
-                        .perform { result in
+                        .run { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
@@ -373,7 +373,7 @@ final class TaskSpec: QuickSpec {
                     subject = .error(MockError.basicError)
                     
                     waitUntil { done in
-                        subject.perform { result in
+                        subject.run { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
@@ -391,7 +391,7 @@ final class TaskSpec: QuickSpec {
                     subject = .just(1)
                     
                     waitUntil { done in
-                        subject.perform { result in
+                        subject.run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -411,7 +411,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         subject
                             .mapError { _ in MappedError.anotherError }
-                            .perform { result in
+                            .run { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
@@ -429,7 +429,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         subject
                             .mapError { _ in MappedError.anotherError }
-                            .perform { result in
+                            .run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -450,7 +450,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         task
                             .map { 2 * $0 }
-                            .perform(queue: queue) { _ in
+                            .run(on: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -463,7 +463,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         subject
                             .map { "\(2 * $0)" }
-                            .perform { result in
+                            .run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -481,7 +481,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         subject
                             .map { 2 * $0 }
-                            .perform { result in
+                            .run { result in
                             guard case let .failure(error) = result else {
                                 fail("\(result)")
                                 return
@@ -494,7 +494,7 @@ final class TaskSpec: QuickSpec {
                 }
             }
             
-            context("when calling perform()") {
+            context("when calling run()") {
                 it("completion runs on correct DispatchQueue") {
                     let queue = DispatchQueue(label: "the-queue", attributes: .concurrent)
                     let otherQueue = DispatchQueue(label: "other-queue", attributes: .concurrent)
@@ -506,7 +506,7 @@ final class TaskSpec: QuickSpec {
                     }
                     
                     waitUntil { done in
-                        task.perform(queue: otherQueue) { _ in
+                        task.run(on: otherQueue) { _ in
                             expect(DispatchQueue.currentLabel) == "other-queue"
                             done()
                         }
@@ -514,7 +514,7 @@ final class TaskSpec: QuickSpec {
                 }
                 
                 it("completion is called") {
-                    subject.perform { result in
+                    subject.run { result in
                         taskComplete = true
                     }
                     
@@ -525,7 +525,7 @@ final class TaskSpec: QuickSpec {
                     result = .success(10)
                     
                     waitUntil { done in
-                        subject.perform { result in
+                        subject.run { result in
                             guard case let .success(value) = result else {
                                 fail("\(result)")
                                 return
@@ -544,7 +544,7 @@ final class TaskSpec: QuickSpec {
                     queue.setSpecific(key: key, value: "abc-key")
                     
                     waitUntil { done in
-                        subject.perform(queue: queue) { result in
+                        subject.run(on: queue) { result in
                             expect(DispatchQueue.getSpecific(key: key)) == "abc-key"
                             done()
                         }

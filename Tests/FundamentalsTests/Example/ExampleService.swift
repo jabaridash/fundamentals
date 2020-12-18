@@ -38,7 +38,7 @@ extension ExampleService: ExampleServiceProtocol {
             .map(String.init)
             .flatMap(getDetails)
             .recover { _ in .placeholder() }
-            .perform { [weak self] result in
+            .run { [weak self] result in
                 self?.handle(result)
                 completion(result)
             }

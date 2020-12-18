@@ -14,7 +14,7 @@ public struct Task<T, E: Error> {
     private let work: ((_ completion: @escaping (Result<T, E>) -> Void) -> Void)
 
     /// Initializes a task with a specified body of work to run at a later point in execution.
-    /// - Parameter work: Specified body of work that will run upon invocation of the `perform()` method.
+    /// - Parameter work: Specified body of work that will run upon invocation of the `run()` method.
     public init(work: @escaping (_ completion: @escaping (Result<T, E>) -> Void) -> Void) {
         self.work = work
     }
@@ -23,7 +23,7 @@ public struct Task<T, E: Error> {
 // MARK: - TaskProtocol conformance
 
 extension Task: TaskProtocol {
-    public func perform(queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void) {
+    public func run(on queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void) {
         work { result in
             if let queue = queue {
                 queue.async { completion(result) }
@@ -48,10 +48,10 @@ extension Task: TaskProtocol {
     
     public func flatMap<U>(_ transform: @escaping (T) -> Task<U, E>) -> Task<U, E> {
         return .init { completion in
-            perform(queue: nil) { result in
+            run(on: nil) { result in
                 switch result {
                 case .success(let value):
-                    transform(value).perform(completion: completion)
+                    transform(value).run(completion: completion)
                 case .failure(let error):
                     completion(.failure(error))
                 }
@@ -74,7 +74,7 @@ extension Task: TaskProtocol {
     
     public func recover(_ recovery: @escaping (E) -> T) -> Task<T, E> {
         return .init { completion in
-            perform(queue: nil) { result in
+            run(on: nil) { result in
                 switch result {
                 case .success(let value):
                     completion(.success(value))
@@ -97,49 +97,31 @@ public extension Task {
         .init { $0(.failure(error)) }
     }
     
-    static func all<T1, T2>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>) -> Task<(T1, T2), Error> {
+    static func join<T1, T2>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>) -> Task<(T1, T2), Error> {
         return Task<Any, Error>.merge([
             task1.map { $0 as Any },
             task2.map { $0 as Any },
         ])
-        .map {
-            return (
-                $0[0] as! T1,
-                $0[1] as! T2
-            )
-        }
+        .map { ($0[0] as! T1, $0[1] as! T2) }
     }
     
-    static func all<T1, T2, T3>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>) -> Task<(T1, T2, T3), Error> {
+    static func join<T1, T2, T3>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>) -> Task<(T1, T2, T3), Error> {
         return Task<Any, Error>.merge([
             task1.map { $0 as Any },
             task2.map { $0 as Any },
             task3.map { $0 as Any },
         ])
-        .map {
-            return (
-                $0[0] as! T1,
-                $0[1] as! T2,
-                $0[2] as! T3
-            )
-        }
+        .map { ($0[0] as! T1, $0[1] as! T2, $0[2] as! T3) }
     }
     
-    static func all<T1, T2, T3, T4>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>,  _ task4: Task<T4, Error>) -> Task<(T1, T2, T3, T4), Error> {
+    static func join<T1, T2, T3, T4>(_ task1: Task<T1, Error>, _ task2: Task<T2, Error>, _ task3: Task<T3, Error>,  _ task4: Task<T4, Error>) -> Task<(T1, T2, T3, T4), Error> {
         return Task<Any, Error>.merge([
             task1.map { $0 as Any },
             task2.map { $0 as Any },
             task3.map { $0 as Any },
             task4.map { $0 as Any },
         ])
-        .map {
-            return (
-                $0[0] as! T1,
-                $0[1] as! T2,
-                $0[2] as! T3,
-                $0[3] as! T4
-            )
-        }
+        .map { ($0[0] as! T1, $0[1] as! T2, $0[2] as! T3, $0[3] as! T4) }
     }
     
     static func merge(_ tasks: [Task<T, Error>], on queue: DispatchQueue = .global()) -> Task<[T], Error> {
@@ -155,7 +137,7 @@ public extension Task {
             for (index, task) in tasks.enumerated() {
                 group.enter()
                 
-                task.perform(queue: nil) { result in
+                task.run(on: nil) { result in
                     defer { group.leave() }
                     
                     guard taskError == nil else { return }
@@ -196,7 +178,7 @@ public func async<T>(on queue: DispatchQueue = .global(qos: .default), _ work: @
 }
 
 public func async(on queue: DispatchQueue = .global(qos: .default), _ work: @escaping () throws -> Void) {
-    async(on: queue, work).perform { _ in }
+    async(on: queue, work).run { _ in }
 }
 
 @discardableResult public func await<T, E: Error>(_ task: Task<T, E>) throws -> T {
@@ -204,7 +186,7 @@ public func async(on queue: DispatchQueue = .global(qos: .default), _ work: @esc
     
     var result: Result<T, E>!
     
-    task.perform(queue: nil) {
+    task.run(on: nil) {
         defer { semaphore.signal() }
         result = $0
     }
