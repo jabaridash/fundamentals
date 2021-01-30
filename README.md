@@ -1,6 +1,6 @@
 # Fundamentals
 
-A small library that provides objects for simplifying the fundamentals of any Swift project such as:
+A small library that abstracts away the fundamentals of any Swift application such as:
 
 - Asynchronous workloads using `DispatcheQueue`
 - HTTP networking for JSON-based APIs using `URLSession`
