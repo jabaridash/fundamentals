@@ -23,12 +23,14 @@ public struct Task<T, E: Error> {
 // MARK: - TaskProtocol conformance
 
 extension Task: TaskProtocol {
-    public func run(on queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void) {
-        work { result in
-            if let queue = queue {
-                queue.async { completion(result) }
-            } else {
-                completion(result)
+    public func run(completingOn queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            work { result in
+                if let queue = queue {
+                    queue.async { completion(result) }
+                } else {
+                    completion(result)
+                }
             }
         }
     }
@@ -48,7 +50,7 @@ extension Task: TaskProtocol {
     
     public func flatMap<U>(_ transform: @escaping (T) -> Task<U, E>) -> Task<U, E> {
         return .init { completion in
-            run(on: nil) { result in
+            run(completingOn: nil) { result in
                 switch result {
                 case .success(let value):
                     transform(value).run(completion: completion)
@@ -74,7 +76,7 @@ extension Task: TaskProtocol {
     
     public func recover(_ recovery: @escaping (E) -> T) -> Task<T, E> {
         return .init { completion in
-            run(on: nil) { result in
+            run(completingOn: nil) { result in
                 switch result {
                 case .success(let value):
                     completion(.success(value))
@@ -137,7 +139,7 @@ public extension Task {
             for (index, task) in tasks.enumerated() {
                 group.enter()
                 
-                task.run(on: nil) { result in
+                task.run(completingOn: nil) { result in
                     defer { group.leave() }
                     
                     guard taskError == nil else { return }
@@ -165,20 +167,18 @@ public extension Task {
 
 // MARK: - Functions
 
-public func async<T>(on queue: DispatchQueue = .global(qos: .default), _ work: @escaping () throws -> T) -> Task<T, Error> {
+public func async<T>(_ work: @escaping () throws -> T) -> Task<T, Error> {
     return .init { completion in
-        queue.async {
-            do {
-                completion(.success(try work()))
-            } catch {
-                completion(.failure(error))
-            }
+        do {
+            completion(.success(try work()))
+        } catch {
+            completion(.failure(error))
         }
     }
 }
 
-public func async(on queue: DispatchQueue = .global(qos: .default), _ work: @escaping () throws -> Void) {
-    async(on: queue, work).run { _ in }
+public func async(_ work: @escaping () throws -> Void) {
+    async(work).run { _ in }
 }
 
 @discardableResult public func await<T, E: Error>(_ task: Task<T, E>) throws -> T {
@@ -186,7 +186,7 @@ public func async(on queue: DispatchQueue = .global(qos: .default), _ work: @esc
     
     var result: Result<T, E>!
     
-    task.run(on: nil) {
+    task.run(completingOn: nil) {
         defer { semaphore.signal() }
         result = $0
     }

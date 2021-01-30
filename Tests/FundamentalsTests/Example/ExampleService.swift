@@ -73,8 +73,8 @@ private extension ExampleService {
         let t1 = httpService.task(for: UserRequest(id: id))
         let t2 = httpService.task(for: TransactionsRequest())
         
-        return async { () -> User in
-            var user = try await(t1)
+        return async {
+            var user: User = try await(t1)
             
             user.transactions = try await(t2)
             

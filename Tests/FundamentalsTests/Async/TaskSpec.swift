@@ -69,7 +69,7 @@ final class TaskSpec: QuickSpec {
                     let task: Task<Int, Error> = .just(1)
                     
                     waitUntil { done in
-                        task.flatMap { _ in Task<String, Error>.just("some-string") }.run(on: queue) { _ in
+                        task.flatMap { _ in Task<String, Error>.just("some-string") }.run(completingOn: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -137,7 +137,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         task
                             .recover { _ in 1}
-                            .run(on: queue) { _ in
+                            .run(completingOn: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -170,7 +170,7 @@ final class TaskSpec: QuickSpec {
                     let t3 = Task<Any, Error>.merge(tasks)
                     
                     waitUntil { done in
-                        t3.run(on: q3) { _ in
+                        t3.run(completingOn: q3) { _ in
                             expect(DispatchQueue.currentLabel) == "q3"
                             done()
                         }
@@ -450,7 +450,7 @@ final class TaskSpec: QuickSpec {
                     waitUntil { done in
                         task
                             .map { 2 * $0 }
-                            .run(on: queue) { _ in
+                            .run(completingOn: queue) { _ in
                             expect(DispatchQueue.currentLabel) == "the-queue"
                             done()
                         }
@@ -506,7 +506,7 @@ final class TaskSpec: QuickSpec {
                     }
                     
                     waitUntil { done in
-                        task.run(on: otherQueue) { _ in
+                        task.run(completingOn: otherQueue) { _ in
                             expect(DispatchQueue.currentLabel) == "other-queue"
                             done()
                         }
@@ -544,7 +544,7 @@ final class TaskSpec: QuickSpec {
                     queue.setSpecific(key: key, value: "abc-key")
                     
                     waitUntil { done in
-                        subject.run(on: queue) { result in
+                        subject.run(completingOn: queue) { result in
                             expect(DispatchQueue.getSpecific(key: key)) == "abc-key"
                             done()
                         }

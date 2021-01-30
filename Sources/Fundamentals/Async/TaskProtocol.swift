@@ -17,11 +17,13 @@ public protocol TaskProtocol {
     /// Type of error contained in the result's `.failure` case if the task fails.
     associatedtype E: Error
 
-    /// Executes the task on a specified `DispatchQueue`.
+    /// Executes the task in the background and runs the completion on a specified `DispatchQueue`.
+    /// If no queue is specified, the completion handler will be run on the same dispatche queue
+    /// that the original task was run on.
     /// - Parameters:
-    ///   - queue: Specified `DispatchQueue`.
+    ///   - queue: Specified `DispatchQueue` to run the completion handler on.
     ///   - completion: Function that contains the work to be performed.
-    func run(on queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void)
+    func run(completingOn queue: DispatchQueue?, completion: @escaping (Result<T, E>) -> Void)
     
     /// Map the result of a `Task` into another type.
     ///
@@ -92,6 +94,6 @@ public extension TaskProtocol {
     /// Executes the completion on `DispatchQueue.main`.
     /// - Parameter completion: Function that contains the work to be performed.
     func run(completion: @escaping (Result<T, E>) -> Void) {
-        self.run(on: .main, completion: completion)
+        self.run(completingOn: .main, completion: completion)
     }
 }

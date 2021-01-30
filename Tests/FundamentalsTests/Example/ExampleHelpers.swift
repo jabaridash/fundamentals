@@ -40,19 +40,20 @@ struct TransactionsRequest: HTTPRequest {
 // MARK: - User
 
 public struct User: Codable, Defaultable, Equatable {
-    public static let defaultValue: User = .init()
+    public static let defaultValue = User()
         
     @Defaulted public var id: String
     @Defaulted public var name: String
+    
     public var transactions: [Transaction]?
     
     public static func placeholder() -> User {
-        return .init(
-            id: .init(value: "id"),
-            name: .init(value: "name"),
+        return User(
+            id: Defaulted(value: "id"),
+            name: Defaulted(value: "name"),
             transactions: [
-                .init(id: 1, description: "description-1"),
-                .init(id: 2, description: "description-2")
+                Transaction(id: 1, description: "description-1"),
+                Transaction(id: 2, description: "description-2")
             ]
         )
     }
@@ -66,7 +67,7 @@ public struct Transaction: Codable, Equatable {
 // MARK: - UserDefaultKey.user
 
 extension UserDefaultKey {
-    static let user: UserDefaultKey = .init(name: "user")
+    static let user: UserDefaultKey = UserDefaultKey(name: "user")
 }
 
 // MARK: - ServiceContainer.example
