@@ -10,15 +10,28 @@ import SwiftUI
 
 @main
 struct SampleApplicationApp: App {
-    // https://peterfriese.dev/ultimate-guide-to-swiftui2-application-lifecycle/
-    init() {
-        Self.registerServices()
-    }
+    private let container = ServiceContainer.shared
     
+    // https://peterfriese.dev/ultimate-guide-to-swiftui2-application-lifecycle/
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(for: GitHubService.self)
+                .environmentObject(GitHubProfileViewModel())
         }
+    }
+    
+    // MARK: - App Startup Logic
+    
+    init() {
+        var httpConfiguration = HTTPConfiguration.default
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+        httpConfiguration.jsonDecoder = jsonDecoder
+        let httpService = HTTPService(session: .shared, httpConfiguration: httpConfiguration)
+        
+        container.register(httpService, as: HTTPService.self)
+        container.register(Logger(), as: Logger.self)
+        container.register(ImageService(), as: ImageService.self)
+        container.register(GitHubService(), as: GitHubService.self)
     }
 }

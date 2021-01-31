@@ -9,19 +9,14 @@ import Foundation
 import Fundamentals
 import UIKit
 
-// MARK: - In-app models
+// MARK: - GithubProfile
 
 struct GithubProfile {
     let user: GitHubUser
     let avatar: UIImage
-    
-    init(_ tuple: (GitHubUser, UIImage)) {
-        self.user = tuple.0
-        self.avatar = tuple.1
-    }
 }
 
-// MARK: - HTTPRequest.ResponseBody models
+// MARK: - GitHubUser
 
 struct GitHubUser: Codable {
     let login: String
@@ -33,6 +28,8 @@ struct GitHubUser: Codable {
     @Defaulted var repos: [GitHubRepository]
 }
 
+// MARK: - GitHubRepository
+
 struct GitHubRepository: Codable, Equatable, Identifiable {
     let id: Int
     let name: String
@@ -42,7 +39,7 @@ struct GitHubRepository: Codable, Equatable, Identifiable {
     let language: String?
 }
 
-// MARK: - HTTPRequest models
+// MARK: - GitHubUserRequest
 
 struct GitHubUserRequest: HTTPRequest {
     typealias ResponseBody = GitHubUser
@@ -53,6 +50,8 @@ struct GitHubUserRequest: HTTPRequest {
         self.url = URL(string: "https://api.github.com/users/\(username)")!
     }
 }
+
+// MARK: - GitHubRepositoriesRequest
 
 struct GitHubRepositoriesRequest: HTTPRequest {
     typealias ResponseBody = [GitHubRepository]
